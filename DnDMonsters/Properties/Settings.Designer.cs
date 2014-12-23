@@ -70,5 +70,17 @@ namespace DnDMonsters.Properties {
                 this["Difficulty"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Encounters {
+            get {
+                return ((string)(this["Encounters"]));
+            }
+            set {
+                this["Encounters"] = value;
+            }
+        }
     }
 }

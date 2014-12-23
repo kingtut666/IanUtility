@@ -35,13 +35,13 @@
             this.butPrint = new System.Windows.Forms.Button();
             this.flowMonsters = new System.Windows.Forms.FlowLayoutPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.checkSummaryOnly = new System.Windows.Forms.CheckBox();
-            this.checkGroupByName = new System.Windows.Forms.CheckBox();
-            this.butEncounter = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.butSaveEncounter = new System.Windows.Forms.Button();
-            this.butLoadEncounter = new System.Windows.Forms.Button();
             this.butDelEncounter = new System.Windows.Forms.Button();
+            this.butLoadEncounter = new System.Windows.Forms.Button();
+            this.butSaveEncounter = new System.Windows.Forms.Button();
+            this.comboEncounters = new System.Windows.Forms.ComboBox();
+            this.butEncounter = new System.Windows.Forms.Button();
+            this.checkGroupByName = new System.Windows.Forms.CheckBox();
+            this.checkSummaryOnly = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -103,7 +103,7 @@
             this.flowMonsters.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowMonsters.Location = new System.Drawing.Point(0, 0);
             this.flowMonsters.Name = "flowMonsters";
-            this.flowMonsters.Size = new System.Drawing.Size(920, 447);
+            this.flowMonsters.Size = new System.Drawing.Size(920, 448);
             this.flowMonsters.TabIndex = 5;
             this.flowMonsters.WrapContents = false;
             // 
@@ -119,7 +119,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.butDelEncounter);
             this.splitContainer1.Panel1.Controls.Add(this.butLoadEncounter);
             this.splitContainer1.Panel1.Controls.Add(this.butSaveEncounter);
-            this.splitContainer1.Panel1.Controls.Add(this.comboBox1);
+            this.splitContainer1.Panel1.Controls.Add(this.comboEncounters);
             this.splitContainer1.Panel1.Controls.Add(this.butEncounter);
             this.splitContainer1.Panel1.Controls.Add(this.checkGroupByName);
             this.splitContainer1.Panel1.Controls.Add(this.checkSummaryOnly);
@@ -133,18 +133,56 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.flowMonsters);
             this.splitContainer1.Size = new System.Drawing.Size(920, 511);
-            this.splitContainer1.SplitterDistance = 60;
+            this.splitContainer1.SplitterDistance = 59;
             this.splitContainer1.TabIndex = 6;
             // 
-            // checkSummaryOnly
+            // butDelEncounter
             // 
-            this.checkSummaryOnly.AutoSize = true;
-            this.checkSummaryOnly.Location = new System.Drawing.Point(367, 9);
-            this.checkSummaryOnly.Name = "checkSummaryOnly";
-            this.checkSummaryOnly.Size = new System.Drawing.Size(93, 17);
-            this.checkSummaryOnly.TabIndex = 5;
-            this.checkSummaryOnly.Text = "Summary Only";
-            this.checkSummaryOnly.UseVisualStyleBackColor = true;
+            this.butDelEncounter.Location = new System.Drawing.Point(408, 34);
+            this.butDelEncounter.Name = "butDelEncounter";
+            this.butDelEncounter.Size = new System.Drawing.Size(90, 23);
+            this.butDelEncounter.TabIndex = 11;
+            this.butDelEncounter.Text = "Del Encounter";
+            this.butDelEncounter.UseVisualStyleBackColor = true;
+            this.butDelEncounter.Click += new System.EventHandler(this.butDelEncounter_Click);
+            // 
+            // butLoadEncounter
+            // 
+            this.butLoadEncounter.Location = new System.Drawing.Point(306, 34);
+            this.butLoadEncounter.Name = "butLoadEncounter";
+            this.butLoadEncounter.Size = new System.Drawing.Size(96, 23);
+            this.butLoadEncounter.TabIndex = 10;
+            this.butLoadEncounter.Text = "Load Encounter";
+            this.butLoadEncounter.UseVisualStyleBackColor = true;
+            this.butLoadEncounter.Click += new System.EventHandler(this.butLoadEncounter_Click);
+            // 
+            // butSaveEncounter
+            // 
+            this.butSaveEncounter.Location = new System.Drawing.Point(201, 34);
+            this.butSaveEncounter.Name = "butSaveEncounter";
+            this.butSaveEncounter.Size = new System.Drawing.Size(99, 23);
+            this.butSaveEncounter.TabIndex = 9;
+            this.butSaveEncounter.Text = "Save Encounter";
+            this.butSaveEncounter.UseVisualStyleBackColor = true;
+            this.butSaveEncounter.Click += new System.EventHandler(this.butSaveEncounter_Click);
+            // 
+            // comboEncounters
+            // 
+            this.comboEncounters.FormattingEnabled = true;
+            this.comboEncounters.Location = new System.Drawing.Point(12, 36);
+            this.comboEncounters.Name = "comboEncounters";
+            this.comboEncounters.Size = new System.Drawing.Size(183, 21);
+            this.comboEncounters.TabIndex = 8;
+            // 
+            // butEncounter
+            // 
+            this.butEncounter.Location = new System.Drawing.Point(613, 8);
+            this.butEncounter.Name = "butEncounter";
+            this.butEncounter.Size = new System.Drawing.Size(75, 23);
+            this.butEncounter.TabIndex = 7;
+            this.butEncounter.Text = "Encounter";
+            this.butEncounter.UseVisualStyleBackColor = true;
+            this.butEncounter.Click += new System.EventHandler(this.butEncounter_Click);
             // 
             // checkGroupByName
             // 
@@ -159,61 +197,23 @@
             this.checkGroupByName.UseVisualStyleBackColor = true;
             this.checkGroupByName.CheckedChanged += new System.EventHandler(this.checkGroupByName_CheckedChanged);
             // 
-            // butEncounter
+            // checkSummaryOnly
             // 
-            this.butEncounter.Location = new System.Drawing.Point(613, 8);
-            this.butEncounter.Name = "butEncounter";
-            this.butEncounter.Size = new System.Drawing.Size(75, 23);
-            this.butEncounter.TabIndex = 7;
-            this.butEncounter.Text = "Encounter";
-            this.butEncounter.UseVisualStyleBackColor = true;
-            this.butEncounter.Click += new System.EventHandler(this.butEncounter_Click);
+            this.checkSummaryOnly.AutoSize = true;
+            this.checkSummaryOnly.Location = new System.Drawing.Point(367, 9);
+            this.checkSummaryOnly.Name = "checkSummaryOnly";
+            this.checkSummaryOnly.Size = new System.Drawing.Size(93, 17);
+            this.checkSummaryOnly.TabIndex = 5;
+            this.checkSummaryOnly.Text = "Summary Only";
+            this.checkSummaryOnly.UseVisualStyleBackColor = true;
             // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(12, 36);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(183, 21);
-            this.comboBox1.TabIndex = 8;
-            // 
-            // butSaveEncounter
-            // 
-            this.butSaveEncounter.Location = new System.Drawing.Point(201, 34);
-            this.butSaveEncounter.Name = "butSaveEncounter";
-            this.butSaveEncounter.Size = new System.Drawing.Size(99, 23);
-            this.butSaveEncounter.TabIndex = 9;
-            this.butSaveEncounter.Text = "Save Encounter";
-            this.butSaveEncounter.UseVisualStyleBackColor = true;
-            this.butSaveEncounter.Click += new System.EventHandler(this.butSaveEncounter_Click);
-            // 
-            // butLoadEncounter
-            // 
-            this.butLoadEncounter.Location = new System.Drawing.Point(306, 34);
-            this.butLoadEncounter.Name = "butLoadEncounter";
-            this.butLoadEncounter.Size = new System.Drawing.Size(96, 23);
-            this.butLoadEncounter.TabIndex = 10;
-            this.butLoadEncounter.Text = "Load Encounter";
-            this.butLoadEncounter.UseVisualStyleBackColor = true;
-            this.butLoadEncounter.Click += new System.EventHandler(this.butLoadEncounter_Click);
-            // 
-            // butDelEncounter
-            // 
-            this.butDelEncounter.Location = new System.Drawing.Point(408, 34);
-            this.butDelEncounter.Name = "butDelEncounter";
-            this.butDelEncounter.Size = new System.Drawing.Size(90, 23);
-            this.butDelEncounter.TabIndex = 11;
-            this.butDelEncounter.Text = "Del Encounter";
-            this.butDelEncounter.UseVisualStyleBackColor = true;
-            this.butDelEncounter.Click += new System.EventHandler(this.butDelEncounter_Click);
-            // 
-            // Form1
+            // EncounterPlanner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(920, 511);
             this.Controls.Add(this.splitContainer1);
-            this.Name = "Form1";
+            this.Name = "EncounterPlanner";
             this.Text = "Form1";
             this.ResizeEnd += new System.EventHandler(this.Form1_ResizeEnd);
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -240,7 +240,7 @@
         private System.Windows.Forms.Button butDelEncounter;
         private System.Windows.Forms.Button butLoadEncounter;
         private System.Windows.Forms.Button butSaveEncounter;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboEncounters;
     }
 }
 
