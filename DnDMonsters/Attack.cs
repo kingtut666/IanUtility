@@ -9,7 +9,6 @@ namespace DnDMonsters
 {
     public class Attack
     {
-        //TEST14
         public enum AttackType { Melee, Ranged };
 
         public string Name;
