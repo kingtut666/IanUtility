@@ -26,7 +26,7 @@ namespace DnDMonsters
             parent = frm;
 
             parent.MonstersChanged += parent_MonstersChanged;
-            parent.ActiveMonstersChanged += parent_ActiveMonstersChanged;
+            parent.activeMonsters.ListChanged += parent_ActiveMonstersChanged;
             
             numNPlayers.Value = Properties.Settings.Default.NumPlayers;
             numLevel.Value = Properties.Settings.Default.PlayersLevel;

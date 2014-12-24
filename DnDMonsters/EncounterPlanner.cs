@@ -19,11 +19,9 @@ namespace DnDMonsters
 
         #region Public
         public Dictionary<string, Monster> Monsters = new Dictionary<string, Monster>();
-        public List<ActiveMonster> activeMonsters = new List<ActiveMonster>();
+        public IanUtility.SortedBindingList<ActiveMonster> activeMonsters = new IanUtility.SortedBindingList<ActiveMonster>();
         public static Random rand = new Random();
         
-
-
         public EncounterPlanner()
         {
             InitializeComponent();
@@ -31,20 +29,53 @@ namespace DnDMonsters
             if (Properties.Settings.Default.MonsterFile != "") 
                 LoadMonsters(Properties.Settings.Default.MonsterFile);
             if (Properties.Settings.Default.Encounters != "")
+            {
                 LoadAllEncounters();
 
-            List<string> se = SavedEncounters.Keys.ToList();
-            se.Sort();
-            comboEncounters.Items.Clear();
-            comboEncounters.Items.AddRange(se.ToArray());
-            if (SavedEncounters.Count > 0) comboEncounters.SelectedIndex = 0;
-            else comboEncounters.SelectedIndex = -1;
+                SaveEncounterList.RaiseListChangedEvents = false;
+                SaveEncounterList.Clear();
+                foreach (string ss in SavedEncounters.Keys) SaveEncounterList.Add(ss);
+                SaveEncounterList.RaiseListChangedEvents = true;
+                
+                ((IBindingList)SaveEncounterList).ApplySort(null, ListSortDirection.Ascending);
+            }
+
+            ((IBindingList)activeMonsters).ApplySort(null, ListSortDirection.Descending);
+            activeMonsters.ListChanged += activeMonsters_ListChanged;
+
+            BindingSource bind = new BindingSource(SaveEncounterList, null);
+            comboEncounters.DisplayMember = "Key";
+            comboEncounters.DataSource = bind;
+            comboEncounters.SelectedIndex = -1;
+        }
+
+        void activeMonsters_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            if (e.ListChangedType == ListChangedType.Reset)
+            {
+                flowMonsters.Controls.Clear();
+                flowMonsters.Refresh();
+                foreach (ActiveMonster m in activeMonsters)
+                {
+                    TableLayoutPanel p = DisplayMonster(m, splitContainer1.Panel2.Width);
+                    flowMonsters.Controls.Add(p);
+                }
+            }
+            else if (e.ListChangedType == ListChangedType.ItemAdded)
+            {
+                TableLayoutPanel p = DisplayMonster(activeMonsters[e.NewIndex], splitContainer1.Panel2.Width);
+                flowMonsters.Controls.Add(p);
+                checkGroupByName_CheckedChanged(null, null);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
         public void ClearMonsters()
         {
-            activeMonsters = new List<ActiveMonster>();
+            activeMonsters.Clear();
             flowMonsters.Controls.Clear();
-            TriggerActiveMonstersChanged();
         }
         public bool ToggleSuspendLayout()
         {
@@ -64,26 +95,21 @@ namespace DnDMonsters
             mm.Summary = summary;
 
             activeMonsters.Add(mm);
-            TableLayoutPanel p = DisplayMonster(mm, splitContainer1.Panel2.Width);
-            flowMonsters.Controls.Add(p);
-            checkGroupByName_CheckedChanged(null, null);
-            TriggerActiveMonstersChanged();
+            
+            
         }
         #endregion
 
 
         #region Events
         public event ListChangedEventHandler MonstersChanged;
-        public event ListChangedEventHandler ActiveMonstersChanged;
+        //public event ListChangedEventHandler ActiveMonstersChanged;
 
         void TriggerMonstersChanged()
         {
             if (MonstersChanged != null) MonstersChanged(this, null);
         }
-        void TriggerActiveMonstersChanged()
-        {
-            if (ActiveMonstersChanged != null) ActiveMonstersChanged(this, null);
-        }
+        
         #endregion
 
 
@@ -135,10 +161,12 @@ namespace DnDMonsters
         private void checkGroupByName_CheckedChanged(object sender, EventArgs e)
         {
             if (!checkGroupByName.Checked) return;
+            /*
+            activeMonsters.
 
             //sort and redisplay
             reordered = false;
-            activeMonsters.Sort(CompareActiveMonsters);
+            //activeMonsters.Sort(CompareActiveMonsters);
             if (reordered)
             {
                 flowMonsters.Controls.Clear();
@@ -148,7 +176,7 @@ namespace DnDMonsters
                     TableLayoutPanel p = DisplayMonster(m, splitContainer1.Panel2.Width);
                     flowMonsters.Controls.Add(p);
                 }
-            }
+            }*/
         }
         private void butEncounter_Click(object sender, EventArgs e)
         {
@@ -159,14 +187,7 @@ namespace DnDMonsters
         private void butSaveEncounter_Click(object sender, EventArgs e)
         {
             SaveEncounter(comboEncounters.Text);
-            List<string> se = SavedEncounters.Keys.ToList();
-            se.Sort();
-            comboEncounters.Items.Clear();
-            comboEncounters.Items.AddRange(se.ToArray());
-            
-            if (SavedEncounters.Count > 0) comboEncounters.SelectedIndex = 0;
-            else comboEncounters.SelectedIndex = -1;
-        
+            SaveEncounterList.Add(comboEncounters.Text);
         }
         private void butLoadEncounter_Click(object sender, EventArgs e)
         {
@@ -174,15 +195,12 @@ namespace DnDMonsters
         }
         private void butDelEncounter_Click(object sender, EventArgs e)
         {
-            if (SavedEncounters.ContainsKey(comboEncounters.Text)) SavedEncounters.Remove(comboEncounters.Text);
+            string enc = comboEncounters.Text;
+            if (SavedEncounters.ContainsKey(enc)) { 
+                SavedEncounters.Remove(comboEncounters.Text);
+                SaveEncounterList.Remove(enc);
+            }
             SaveAllEncounters();
-            List<string> se = SavedEncounters.Keys.ToList();
-            se.Sort();
-            comboEncounters.Items.Clear();
-            comboEncounters.Items.AddRange(se.ToArray());
-            
-            if (SavedEncounters.Count > 0) comboEncounters.SelectedIndex = 0;
-            else comboEncounters.SelectedIndex = -1;
         }
         #endregion
 
@@ -443,6 +461,7 @@ namespace DnDMonsters
         void Document_BeginPrint(object sender, System.Drawing.Printing.PrintEventArgs e)
         {
             printIdx = 0;
+            
         }
         static int printIdx = 0;
         void Document_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
@@ -551,49 +570,13 @@ namespace DnDMonsters
 
                 TriggerMonstersChanged();
             }
-            catch (Exception e) { MessageBox.Show("Couldn't load monsters", "Error"); }
+            catch (Exception) { MessageBox.Show("Couldn't load monsters", "Error"); }
         }
 
         
-        static bool reordered = false;
-        static int CompareActiveMonsters(ActiveMonster a, ActiveMonster b){
-            if (a == null && b == null) return 0;
-            if (a == null)
-            {
-                reordered = true; 
-                return -1;
-            }
-            if (b == null)  return 1; 
-            int i;
-            //compare by name
-            i = String.Compare(a.Monster.Name, b.Monster.Name, StringComparison.CurrentCultureIgnoreCase);
-            if (i < 0)
-            {
-                reordered = true;
-                return i;
-            }
-            else if(i>0) return i;
-            //compare by summary
-            if (a.Summary != b.Summary)
-            {
-                if (a.Summary) return 1;
-                else
-                {
-                    reordered = true;
-                    return -1; //b.Summary
-                }
-            }
-            //compare by HP
-            if (a.HP == b.HP) return 0;
-            if (a.HP > b.HP)
-            {
-                reordered = true;
-                return -1;
-            }
-            return 1;
-        }
 
         #region Encounter save/load
+        IanUtility.SortedBindingList<string> SaveEncounterList = new IanUtility.SortedBindingList<string>();
         Dictionary<string, List<Tuple<string, int, bool>>> SavedEncounters = new Dictionary<string, List<Tuple<string, int, bool>>>();
         void LoadAllEncounters()
         {
@@ -607,10 +590,6 @@ namespace DnDMonsters
 
             }
 
-            List<string> se = SavedEncounters.Keys.ToList();
-            se.Sort();
-            comboEncounters.Items.Clear();
-            comboEncounters.Items.AddRange(se.ToArray());
             
         }
         void SaveAllEncounters()
