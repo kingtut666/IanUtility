@@ -10,6 +10,7 @@ namespace IanUtility
     
     public class SortedBindingList<T> : BindingList<T>
     {
+        //TEST
         bool Sorted = false;
         protected override void OnListChanged(ListChangedEventArgs e)
         {
