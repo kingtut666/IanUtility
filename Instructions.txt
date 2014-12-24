@@ -1,0 +1,14 @@
+﻿
+From parent directory:
+
+$ git remote add utility ssh://192.168.1.26/volume1/git-repos/utility.git
+$ git subtree add --prefix=utility utility master
+
+Pushes:
+$ git subtree push --prefix=utility utility master
+
+Pull:
+$ git subtree pull --prefix=utility utility master
+
+
+....
