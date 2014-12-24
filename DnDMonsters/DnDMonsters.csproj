@@ -90,7 +90,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IanUtility\IanUtility.csproj">
+    <ProjectReference Include="..\utility\IanUtility.csproj">
       <Project>{ec64f7a0-b0f3-409b-885b-63306937bc2a}</Project>
       <Name>IanUtility</Name>
     </ProjectReference>
