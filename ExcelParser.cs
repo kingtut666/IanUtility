@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.IO;
 
 namespace IanUtility
 {
@@ -189,13 +190,25 @@ namespace IanUtility
                 {
                     switch (c.DataType.Value)
                     {
-                        case CellValues.Boolean:
+                        
                         case CellValues.Date:
                         case CellValues.Error:
                         case CellValues.InlineString:
-                        case CellValues.Number:
                         default:
                             throw new NotImplementedException();
+                        case CellValues.Boolean:
+                            string s = c.CellValue.Text;
+                            if (s.Equals("1", StringComparison.CurrentCultureIgnoreCase)) ret.bVal = true;
+                            else ret.bVal = false;
+                            ret.Type = DataType.Bool;
+                            //ret.bVal = DocumentFormat.OpenXml.BooleanValue.ToBoolean(c.CellValue);
+                            break;
+                        case CellValues.Number:
+                            string sn = c.CellValue.Text;
+                            if (!Int32.TryParse(sn, out ret.iVal)) 
+                                throw new NotImplementedException();
+                            ret.Type = DataType.Int;
+                            break;
                         case CellValues.String:
                             ret.sVal = c.CellValue.Text;
                             ret.Type = DataType.Text;
@@ -314,7 +327,31 @@ namespace IanUtility
 
         public List<Sheet> Sheets = new List<Sheet>();
 
+        public bool SaveAs(Stream st)
+        {
+            try
+            {
+                using (SpreadsheetDocument spreadSheet = SpreadsheetDocument.Create(st, 
+                    DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+                {
+                    // create the workbook
+                    spreadSheet.AddWorkbookPart();
+                    spreadSheet.WorkbookPart.Workbook = new Workbook();     // create the worksheet
+                    spreadSheet.WorkbookPart.AddNewPart<WorksheetPart>();
 
+                    foreach (Sheet s in Sheets)
+                    {
+                        CreateSheet(s, spreadSheet);
+                    }
+                    spreadSheet.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            return true;
+        }
         public bool SaveAs(string fname)
         {
             try
@@ -425,8 +462,9 @@ namespace IanUtility
                     int cellIdx = 0;
                     foreach(DocumentFormat.OpenXml.Spreadsheet.Cell c in r.Elements<DocumentFormat.OpenXml.Spreadsheet.Cell>() ){
                         Cell cc = Cell.CellFromSheet(c, sst);
-                        if (cc == null) { cellIdx++; continue; } 
-                        
+                        if (cc == null) { cellIdx++; continue; }
+                        cc.row = row;
+
                         if (firstRow)
                         {
                             Column col = new Column();
@@ -445,6 +483,7 @@ namespace IanUtility
                                 s.ColumnByIndex.Add(cellIdx, col);
                             }
                             row.Cells.Add(s.ColumnByIndex[cellIdx], cc);
+                            cc.column = s.ColumnByIndex[cellIdx];
                         }
                         cellIdx++;
                     }
