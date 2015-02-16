@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.IO;
+using System.Data;
 
 namespace IanUtility
 {
@@ -439,8 +440,22 @@ namespace IanUtility
 
 
 
-
-        public static ExcelParser FromFile(string fname, string sheetName="", bool firstLineIsTitle=false, bool IgnoreEmptyRows=false)
+        int GetColumnIndex(string reference)
+        {
+            //e.g. A2 = 0, AB2=27 (A.=26+.A=0)
+            int val = 0;
+            int i = 0;
+            reference = reference.ToLower();
+            while (i < reference.Length && Char.IsLetter(reference, i))
+            {
+                val = val * 26;
+                val += (int)reference[i] - (int)'a'+1;
+                i++;
+            }
+            val -= 1;
+            return val;
+        }
+        public static ExcelParser FromFile(string fname, string sheetName="", bool firstLineColHdg=false, bool IgnoreEmptyRows=false)
         {
             ExcelParser ret = new ExcelParser();
 
@@ -455,37 +470,36 @@ namespace IanUtility
 
                 Sheet s = new Sheet();
 
-                bool firstRow = firstLineIsTitle;
+                bool firstRow = firstLineColHdg;
                 foreach (DocumentFormat.OpenXml.Spreadsheet.Row r in sheetData.Elements<DocumentFormat.OpenXml.Spreadsheet.Row>())
                 {
                     Row row = new Row();
-                    int cellIdx = 0;
                     foreach(DocumentFormat.OpenXml.Spreadsheet.Cell c in r.Elements<DocumentFormat.OpenXml.Spreadsheet.Cell>() ){
                         Cell cc = Cell.CellFromSheet(c, sst);
-                        if (cc == null) { cellIdx++; continue; }
+                        if (cc == null) { continue; }
                         cc.row = row;
 
                         if (firstRow)
                         {
                             Column col = new Column();
-                            col.Idx = cellIdx;
+                            col.Idx = ret.GetColumnIndex(c.CellReference);
                             col.Name = cc.Text;
-                            s.ColumnByIndex.Add(cellIdx, col);
+                            s.ColumnByIndex.Add(col.Idx, col);
                             s.ColumnByName.Add(col.Name, col);
                         }
                         else
                         {
                             // !firstRow
-                            if (!s.ColumnByIndex.ContainsKey(cellIdx))
+                            int cIdx = ret.GetColumnIndex(c.CellReference);
+                            if (!s.ColumnByIndex.ContainsKey(cIdx))
                             {
                                 Column col = new Column();
-                                col.Idx = cellIdx;
-                                s.ColumnByIndex.Add(cellIdx, col);
+                                col.Idx = cIdx;
+                                s.ColumnByIndex.Add(cIdx, col);
                             }
-                            row.Cells.Add(s.ColumnByIndex[cellIdx], cc);
-                            cc.column = s.ColumnByIndex[cellIdx];
+                            row.Cells.Add(s.ColumnByIndex[cIdx], cc);
+                            cc.column = s.ColumnByIndex[cIdx];
                         }
-                        cellIdx++;
                     }
                     if (!firstRow)
                     {
@@ -504,8 +518,6 @@ namespace IanUtility
             return ret;
 
         }
-
-
 
 
 

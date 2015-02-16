@@ -9,17 +9,19 @@ namespace IanUtility
 {
     public class TreeViewHelper
     {
-        public static TreeNode AddNewTreeNode(TreeNode parent, string name, bool check)
+        public static TreeNode AddNewTreeNode(TreeNode parent, string name, bool check, object tag=null)
         {
             TreeNode tn = new TreeNode(name);
             tn.Checked = check;
+            tn.Tag = tag;
             parent.Nodes.Add(tn);
             return tn;
         }
-        public static TreeNode AddNewTreeNode(TreeView parent, string name, bool check)
+        public static TreeNode AddNewTreeNode(TreeView parent, string name, bool check, object tag=null)
         {
             TreeNode tn = new TreeNode(name);
             tn.Checked = check;
+            tn.Tag = tag;
             parent.Nodes.Add(tn);
             return tn;
         }

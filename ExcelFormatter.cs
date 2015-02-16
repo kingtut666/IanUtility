@@ -79,7 +79,7 @@ namespace IanUtility
             Type t = TypeDescriptor.GetReflectionType(graph);
             if (t.IsGenericType)
             {
-                return; //TODO: until implemented
+                return; //TODO: _serialize of generic types is implemented
                 if (t.GetGenericTypeDefinition() == typeof(List<>))
                 {
                     Type i = t.GetGenericArguments().Single();

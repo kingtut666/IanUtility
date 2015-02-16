@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IanUtility
 {
-    
+    [Serializable]   
     public class SortedBindingList<T> : BindingList<T>
     {
         //TEST
